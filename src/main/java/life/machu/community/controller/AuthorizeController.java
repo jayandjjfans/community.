@@ -38,6 +38,10 @@ public class AuthorizeController {
     public String callback(@RequestParam(name = "code") String code,
                            @RequestParam(name = "state") String state,
                             HttpServletResponse response) {
+
+        System.out.println("获得的艾迪是："+clientId);
+
+
         AccessTokenDTO accessTokenDTO = new AccessTokenDTO();
         accessTokenDTO.setCode(code);
         accessTokenDTO.setRedirect_uri(redirectUri);
@@ -46,7 +50,10 @@ public class AuthorizeController {
         accessTokenDTO.setClient_secret(clientSecret);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if (githubUser != null) {
+        System.out.println("艾迪是"+githubUser.getId());
+        System.out.println("对象是"+githubUser);
+
+        if (githubUser!=null&&githubUser.getId()!=null) {
             //登陆成功，写cookies和session
             User user = new User();
             String token = UUID.randomUUID().toString();
@@ -55,6 +62,7 @@ public class AuthorizeController {
             user.setAccountId(String.valueOf(githubUser.getId()));
             user.setGmtCreate(System.currentTimeMillis());
             user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(githubUser.getAvatarUrl());
             userMapper.insert(user);
             response.addCookie(new Cookie("token",token));
 
