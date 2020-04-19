@@ -22,26 +22,12 @@ public class IndexController {
 
     @Autowired
     private QuestionService questionService;
-    @Autowired
-    private UserMapper userMapper;
+
     @GetMapping("/")
-    public String index(HttpServletRequest request,Model model,
+    public String index(Model model,
                        @RequestParam(name = "page",defaultValue = "1")Integer page,
                         @RequestParam(name = "size",defaultValue = "2")Integer size){
-        Cookie[] cookies = request.getCookies();
-        if (cookies!=null&&cookies.length!=0) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("token")) {
-                    String token = cookie.getValue();
-                    User user=userMapper.findByToken(token);
-                    if (user!=null){
-                        request.getSession().setAttribute("user",user);
-                    }
-                    break;
-                }
 
-            }
-        }
 
         PaginationDTO pagination=questionService.list(page,size);
 
