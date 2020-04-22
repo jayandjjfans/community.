@@ -1,12 +1,12 @@
 package life.machu.community.controller;
 
-import life.machu.community.dto.CommentDTO;
+import life.machu.community.dto.CommentCreateDTO;
 import life.machu.community.dto.ResultDTO;
 import life.machu.community.exception.CustomizeErrorCode;
-import life.machu.community.mapper.CommentMapper;
 import life.machu.community.model.Comment;
 import life.machu.community.model.User;
 import life.machu.community.service.CommentService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +20,18 @@ public class CommentController {
     private CommentService commentService;
     @ResponseBody
     @RequestMapping(value ="/comment",method = RequestMethod.POST)
-    public Object post(@RequestBody CommentDTO commentDTO, HttpServletRequest request){
+    public Object post(@RequestBody CommentCreateDTO commentCreateDTO, HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         if (user==null){
             return ResultDTO.errorOf(CustomizeErrorCode.NO_LOGIN);
         }
-
+        if (commentCreateDTO==null|| StringUtils.isBlank(commentCreateDTO.getContent())){
+            return ResultDTO.errorOf(CustomizeErrorCode.CONTENT_IS_EMPTY);
+        }
         Comment comment = new Comment();
-        comment.setParentId(commentDTO.getParentId());
-        comment.setContent(commentDTO.getContent());
-        comment.setType(commentDTO.getType());
+        comment.setParentId(commentCreateDTO.getParentId());
+        comment.setContent(commentCreateDTO.getContent());
+        comment.setType(commentCreateDTO.getType());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setCommentatar(user.getId());
