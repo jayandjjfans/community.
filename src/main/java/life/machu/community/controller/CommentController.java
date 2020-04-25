@@ -1,7 +1,9 @@
 package life.machu.community.controller;
 
 import life.machu.community.dto.CommentCreateDTO;
+import life.machu.community.dto.CommentDTO;
 import life.machu.community.dto.ResultDTO;
+import life.machu.community.enums.CommentTypeEnum;
 import life.machu.community.exception.CustomizeErrorCode;
 import life.machu.community.model.Comment;
 import life.machu.community.model.User;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class CommentController {
@@ -38,5 +41,12 @@ public class CommentController {
         comment.setLikecount(0L);
         commentService.insert(comment);
         return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/comment/{id}",method = RequestMethod.GET)
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id){
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
+        return ResultDTO.okOf(commentDTOS);
     }
 }
